@@ -34,10 +34,12 @@ jQuery(function() {
 
         var is_search = jQuery('body#comp-Search-Results').length > 0;
         var is_bulk_update = jQuery('body#comp-Search-Bulk').length > 0;
+        var is_ticket_summary = jQuery('table.ticket-summary').length > 0;
 
         var url = RT.Config.WebHomePath + '/Helpers/ShortcutHelp' +
                   '?show_search=' + ( is_search || is_bulk_update ? '1' : '0' ) +
-                  '&show_bulk_update=' + ( is_bulk_update ? '1' : '0' );
+                  '&show_bulk_update=' + ( is_bulk_update ? '1' : '0' ) +
+                  '&show_ticket_summary=' + ( is_ticket_summary ? '1' : '0' );
 
         jQuery.ajax({
             url: url,
@@ -63,9 +65,7 @@ jQuery(function() {
     Mousetrap.bind('g h', goHome);
     Mousetrap.bind('/', simpleSearch);
     Mousetrap.bind('?', openHelp);
-});
 
-jQuery(function() {
     // Only load these shortcuts if there is a ticket list on the page
     var hasTicketList = jQuery('table.ticket-list').length;
     if (!hasTicketList) return;
@@ -124,20 +124,28 @@ jQuery(function() {
     };
 
     var replyToTicket = function() {
-        if (!currentRow) return;
-
-        var ticketId = currentRow.closest('tbody').data('recordId');
-        var replyLink = generateUpdateLink(ticketId, 'Respond');
+        var ticketId = jQuery('tr.id').children('td.value').text();
+        if (!currentRow && !ticketId ) return;
+        if ( !currentRow ) {
+            var replyLink = generateUpdateLink(ticketId, 'Respond');
+        } else {
+            var ticketId = currentRow.closest('tbody').data('recordId');
+            var replyLink = generateUpdateLink(ticketId, 'Respond');
+        };
         if (!replyLink) return;
 
         window.location.href = replyLink;
     };
 
     var commentOnTicket = function() {
-        if (!currentRow) return;
-
-        var ticketId = currentRow.closest('tbody').data('recordId');
-        var commentLink = generateUpdateLink(ticketId, 'Comment');
+        var ticketId = jQuery('tr.id').children('td.value').text();
+        if (!currentRow && !ticketId) return;
+        if ( !currentRow ) {
+            var commentLink = generateUpdateLink(ticketId, 'Comment');
+        } else {
+            var ticketId = currentRow.closest('tbody').data('recordId');
+            var commentLink = generateUpdateLink(ticketId, 'Comment');
+        };
         if (!commentLink) return;
 
         window.location.href = commentLink;
